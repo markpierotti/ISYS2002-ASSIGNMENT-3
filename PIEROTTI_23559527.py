@@ -22,3 +22,5 @@ print(f'Number of duplicate rows: {duplicates.sum()}')
 
 #apply indexing to column A - 'dt'. pandas library already loaded
 data.set_index('dt', inplace=True)
+
+#I THINK THIS WORKS :D
