@@ -11,7 +11,7 @@ Created on Wed Jun 12 15:45:34 2024
 #normalisation, indexation, date standardisation, pre-processing,
 #and a few things ill add aling the way
 import pandas as pd
-
+from sklearn.preprocessing import MinMaxScaler
 #import dataset. changed file location from assessment 2 to asesssment 3 folder
 data = pd.read_csv('/Users/pierotti/SCU/ISYS2002_Data Wrangling and Advanced Analytics/Assignment 3/GlobalTemperatures.csv')
 
@@ -48,5 +48,11 @@ data.set_index('Date', inplace=True)
 # print to see if it works. It does work, print code commented out. *when code is commented out, index
 # added to dataframe as individual column, code modifies Date column to be Row Label of Dataframe
 # print(data)
-hg
 
+# normalize temperature columns [0,1] using MinMaxScaler - excluding normalisation of x-uncertainity columns
+# as they will not be used as output variables
+scaler = MinMaxScaler()
+data[['Land Average Temperature', 'Land Max Temperature', 'Land Min Temperature', 'Land And Ocean Average Temperature']] = scaler.fit_transform(
+data[['Land Average Temperature', 'Land Max Temperature', 'Land Min Temperature', 'Land And Ocean Average Temperature']])
+# print to see if it works. It does work, print code commented out.
+#print(data)
