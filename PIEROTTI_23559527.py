@@ -91,18 +91,49 @@ data[['Land Average Temperature', 'Land Max Temperature', 'Land Min Temperature'
 
 # Predictors (X) and Target Variable (y) defined
 
+X = data[['Land Average Temperature', 'Land Max Temperature', 'Land Min Temperature', 'Land And Ocean Average Temperature']].values
+y = data[['Land Average Temperature']].values
 
-X = data[['Land Average Temperature', 'Land Max Temperature', 'Land Min Temperature', 'Land And Ocean Average Temperature']]
-y = data['Land Average Temperature']
-# Standardisation of features
-
-scaler = MinMaxScaler()
+# Standardisation of features *NOTE - running the MinMaxScaler below threw an error: ValueError: Expected a 2-dimensional container but got <class 'pandas.core.series.Series'> instead. Pass a DataFrame containing a single row (i.e. single sample) or a single column (i.e. single feature) instead.
+# asked chatGPT to explain the error by copying the output in the iPython Console - this is referred to in the assessment in Appendix A
+scaler = MinMaxScaler() 	
 scaler.fit(X)
 X_norm = scaler.transform(X)
+# chatGPT code addition below
+
+
+# Select the target variable and ensure it's a DataFrame
+y = data[['Land Average Temperature']] # Note the double brackets
+
+# Initalise the Scaler
+scaler = MinMaxScaler() 	
+# Fit the scaler
 scaler.fit(y)
-y_norm = scaler.transform(y)
+# Transform the data
+y_scaled = scaler.transform(y)
 
 # split dataset into train, validation and test sets
-X_train_temp, X_test, y_train_temp, y_test = train_test_split(X_norm, y_norm, test_size=0.2, random_state=42)
+X_train_temp, X_test, y_train_temp, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 X_train, X_val, y_train, y_val = train_test_split(X_train_temp, y_train_temp, test_size=0.2, random_state=42)
-print(data)
+
+# Create the model
+model = Sequential()
+model.add(InputLayer(input_shape=(4)))
+model.add(Dense(units=10, activation='relu'))
+model.add(Dense(units=10, activation='relu'))
+model.add(Dense(1, activation='linear'))
+
+# Model compilation
+model.compile(loss='mean_squared_error', optimizer='adam', metrics=['mae'])
+model.fit(X_train, y_train ,batch_size = 20, epochs = 5, verbose=1)
+
+y_pred = model.predict(X_test)
+MSE = mean_squared_error(y_test, y_pred)
+print("Testing MSE: ", MSE)
+
+# y_pred_train = model.predict(X_train)
+# y_pred_val = model.predict(X_val)
+# y_pred_test = model.predict(X_test)
+# print("Training MSE: ", mean_squared_error(y_train, y_pred_train))
+# print("Validation MSE: ", mean_squared_error(y_val, y_pred_val))
+# print("Testing MSE: ", mean_squared_error(y_test, y_pred_test))
