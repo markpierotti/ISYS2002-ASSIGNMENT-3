@@ -12,8 +12,15 @@ Created on Wed Jun 12 15:45:34 2024
 # and a few things ill add aling the way
 
 import pandas as pd
+import numpy as np
 from sklearn.preprocessing import MinMaxScaler
-
+from sklearn.model_selection import train_test_split
+import matplotlib.pyplot as plt
+import seaborn as sns
+from keras.models import Sequential
+from keras.layers import Dense
+from keras.layers import InputLayer
+from sklearn.metrics import mean_squared_error
 # import dataset. changed file location from assessment 2 to asesssment 3 folder
 # pd.read_csv() function makes csv a dataframe
 data = pd.read_csv('/Users/pierotti/SCU/ISYS2002_Data Wrangling and Advanced Analytics/Assignment 3/GlobalTemperatures.csv')
@@ -31,8 +38,8 @@ data.drop(columns=['LandAverageTemperatureUncertainty', 'LandMaxTemperatureUncer
 
 # check for duplicates in dataset
 # no duplicates found, so code commented out
-#duplicates = data.duplicated()
-#print(f'Number of duplicate rows: {duplicates.sum()}')
+data.drop_duplicates(inplace=True)
+print(data)
 # Number of duplicate rows: 0
 
 # Rename 'dt' column to 'Date' and added spaces to other column headers with data.rename from pandas - logic was wrong, relocated data.rename
@@ -80,3 +87,22 @@ data[['Land Average Temperature', 'Land Max Temperature', 'Land Min Temperature'
 # print to see if it works. It does work, print code commented out.
 #print(data)
 
+# Neural Network part
+
+# Predictors (X) and Target Variable (y) defined
+
+
+X = data[['Land Average Temperature', 'Land Max Temperature', 'Land Min Temperature', 'Land And Ocean Average Temperature']]
+y = data['Land Average Temperature']
+# Standardisation of features
+
+scaler = MinMaxScaler()
+scaler.fit(X)
+X_norm = scaler.transform(X)
+scaler.fit(y)
+y_norm = scaler.transform(y)
+
+# split dataset into train, validation and test sets
+X_train_temp, X_test, y_train_temp, y_test = train_test_split(X_norm, y_norm, test_size=0.2, random_state=42)
+X_train, X_val, y_train, y_val = train_test_split(X_train_temp, y_train_temp, test_size=0.2, random_state=42)
+print(data)
