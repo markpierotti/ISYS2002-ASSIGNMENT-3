@@ -132,7 +132,7 @@ model.fit(X_train, y_train ,batch_size = 20, epochs = 5, verbose=1)
 
 y_pred = model.predict(X_test)
 MSE = mean_squared_error(y_test, y_pred)
-
+MAE = mean_absolute_error(y_val, y_pred)
 
 y_pred_train = model.predict(X_train)
 y_pred_val = model.predict(X_val)
@@ -162,11 +162,14 @@ print("Testing MSE: ", mean_squared_error(y_test, y_pred_test))
 
 # Epoch trials to establish best model with least error for training to then test the data with.
 epochs_trial = [3, 5, 7, 10, 11, 12, 13, 14, 15, 16, 17, 18]
-errors = []
+erros = []
 for epoch in epochs_trial:
-    model.compile(loss='mean_squared_error', optimizer='adam')
+    model.compile(loss='mean_squared_error', optimizer='adam', metrics=['mean_absolute_error])
     model.fit(X_train, y_train ,batch_size = 20, epochs = 5, verbose=1)
     y_pred = model.predict(X_val)
-    MAE = mean_absolute_error(y_val, y_pred)
+   
     print("Validation Error for epoch: ", epoch, " is ", MAE)
-    errors.append(MAE)
+    erros.append(MAE)
+
+best_epoch = epochs_trial[np.where(erros == min(erros))[0][0]]
+print("Best epoch is: ", best_epoch)
