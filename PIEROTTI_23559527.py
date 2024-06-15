@@ -20,7 +20,7 @@ import seaborn as sns
 from keras.models import Sequential
 from keras.layers import Dense
 from keras.layers import InputLayer
-from sklearn.metrics import mean_squared_error
+from sklearn.metrics import mean_squared_error, mean_absolute_error
 
 # import dataset. changed file location from assessment 2 to asesssment 3 folder. pd.read_csv() function makes csv a dataframe
 data = pd.read_csv('/Users/pierotti/SCU/ISYS2002_Data Wrangling and Advanced Analytics/Assignment 3/GlobalTemperatures.csv')
@@ -125,14 +125,14 @@ model.add(Dense(units=10, activation='relu'))
 model.add(Dense(units=10, activation='relu'))
 model.add(Dense(1, activation='linear'))
 
-# Model compilation using Mean Squared Error loss, Adam optimiser for  gradient descent,
+# Model compilation using Mean Squared Error loss, Adam optimiser for gradient descent,
 # Performance metrics using Mean Absolute Square.
-model.compile(loss='mean_squared_error', optimizer='adam', metrics=['mae'])
-model.fit(X_train, y_train ,batch_size = 20, epochs = 5, verbose=1)
+model.compile(loss=' mean_squared_error', optimizer=' adam', metrics=['mae'])
+model.fit(X_train, y_train, batch_size = 20, epochs = 5, verbose=1)
 
 y_pred = model.predict(X_test)
 MSE = mean_squared_error(y_test, y_pred)
-MAE = mean_absolute_error(y_val, y_pred)
+MAE = mean_absolute_error(y_test, y_pred)
 
 y_pred_train = model.predict(X_train)
 y_pred_val = model.predict(X_val)
@@ -164,10 +164,17 @@ print("Testing MSE: ", mean_squared_error(y_test, y_pred_test))
 epochs_trial = [3, 5, 7, 10, 11, 12, 13, 14, 15, 16, 17, 18]
 erros = []
 for epoch in epochs_trial:
-    model.compile(loss='mean_squared_error', optimizer='adam', metrics=['mean_absolute_error])
+    model = Sequential()
+    model.add(InputLayer(input_shape=(4)))
+    model.add(Dense(units=10, activation='relu'))
+    model.add(Dense(units=10, activation='relu'))
+    model.add(Dense(1, activation='linear'))
+    
+    model.compile(loss='mean_squared_error', optimizer='adam', metrics=['mean_absolute_error'])
     model.fit(X_train, y_train ,batch_size = 20, epochs = 5, verbose=1)
+    
     y_pred = model.predict(X_val)
-   
+    MAE = mean_absolute_error(y_val, y_pred)
     print("Validation Error for epoch: ", epoch, " is ", MAE)
     erros.append(MAE)
 
