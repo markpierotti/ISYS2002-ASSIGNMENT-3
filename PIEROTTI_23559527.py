@@ -113,7 +113,11 @@ scaler.fit(y)
 
 # Transform the data
 y_scaled = scaler.transform(y)
-
+# Declare how many times the training sqquence will run i.e. 5.
+num_runs = 5  
+for run in range(num_runs):
+    print(f"Run {run + 1}:")
+    
 # Split dataset into train, validation and test sets
 X_train_temp, X_test, y_train_temp, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 X_train, X_val, y_train, y_val = train_test_split(X_train_temp, y_train_temp, test_size=0.2, random_state=42)
@@ -121,19 +125,21 @@ X_train, X_val, y_train, y_val = train_test_split(X_train_temp, y_train_temp, te
 # Create a sequential neural network model with input, hidden and output layers
 model = Sequential()
 model.add(InputLayer(input_shape=(4)))
-model.add(Dense(units=10, activation='relu'))
-model.add(Dense(units=10, activation='relu'))
+model.add(Dense(units=20, activation='relu'))
+model.add(Dense(units=20, activation='relu'))
 model.add(Dense(1, activation='linear'))
 
-# Model compilation using Mean Squared Error loss, Adam optimiser for gradient descent,
-# Performance metrics using Mean Absolute Square.
-model.compile(loss=' mean_squared_error', optimizer=' adam', metrics=['mae'])
+# Model compilation using 'mean squared error' for loss, 'adam' optimiser for gradient descent
+# and Performance metrics using mean absolute square.
+model.compile(loss='mean_squared_error', optimizer='adam', metrics=['mae'])
+
+# Model training
 model.fit(X_train, y_train, batch_size = 20, epochs = 5, verbose=1)
 
+# Model evaluation
 y_pred = model.predict(X_test)
 MSE = mean_squared_error(y_test, y_pred)
 MAE = mean_absolute_error(y_test, y_pred)
-
 y_pred_train = model.predict(X_train)
 y_pred_val = model.predict(X_val)
 y_pred_test = model.predict(X_test)
@@ -160,23 +166,44 @@ print("Testing MSE: ", mean_squared_error(y_test, y_pred_test))
 # Validation MSE:  3.0016487629562033e-05
 # Testing MSE:  3.8776119495861166e-05
 
-# Epoch trials to establish best model with least error for training to then test the data with.
-epochs_trial = [3, 5, 7, 10, 11, 12, 13, 14, 15, 16, 17, 18]
-erros = []
-for epoch in epochs_trial:
-    model = Sequential()
-    model.add(InputLayer(input_shape=(4)))
-    model.add(Dense(units=10, activation='relu'))
-    model.add(Dense(units=10, activation='relu'))
-    model.add(Dense(1, activation='linear'))
+# # Epoch trials to establish best model with least error for training to then test the data with.
+# epochs_trial = [3, 5, 7, 10, 11, 12, 13, 14, 15, 16, 17, 18]
+# erros = []
+# for epoch in epochs_trial:
+#     model = Sequential()
+#     model.add(InputLayer(input_shape=(4)))
+#     model.add(Dense(units=10, activation='relu'))
+#     model.add(Dense(units=10, activation='relu'))
+#     model.add(Dense(1, activation='linear'))
     
-    model.compile(loss='mean_squared_error', optimizer='adam', metrics=['mean_absolute_error'])
-    model.fit(X_train, y_train ,batch_size = 20, epochs = 5, verbose=1)
+#     model.compile(loss='mean_squared_error', optimizer='adam', metrics=['mean_absolute_error'])
+#     model.fit(X_train, y_train ,batch_size = 20, epochs = 5, verbose=1)
     
-    y_pred = model.predict(X_val)
-    MAE = mean_absolute_error(y_val, y_pred)
-    print("Validation Error for epoch: ", epoch, " is ", MAE)
-    erros.append(MAE)
+#     y_pred = model.predict(X_val)
+#     MAE = mean_absolute_error(y_val, y_pred)
+#     print("Validation Error for epoch: ", epoch, " is ", MAE)
+#     erros.append(MAE)
 
-best_epoch = epochs_trial[np.where(erros == min(erros))[0][0]]
-print("Best epoch is: ", best_epoch)
+# best_epoch = epochs_trial[np.where(erros == min(erros))[0][0]]
+# print("Best epoch is: ", best_epoch)
+
+# # Experiment to see what happens if it runs 100 epochs(!) ive optimised the M1 Apple Silicon chip to leverage the GPU and Neural Network Architecture, this should be interesting.
+# epochs_trial = list(range(1, 101))
+# erros = []
+# for epoch in epochs_trial:
+#     model = Sequential()
+#     model.add(InputLayer(input_shape=(4)))
+#     model.add(Dense(units=33, activation='relu'))
+#     model.add(Dense(units=2, activation='relu'))
+#     model.add(Dense(1, activation='linear'))
+    
+#     model.compile(loss='mean_squared_error', optimizer='adam', metrics=['mean_absolute_error'])
+#     model.fit(X_train, y_train ,batch_size = 20, epochs = 5, verbose=1)
+    
+#     y_pred = model.predict(X_val)
+#     MAE = mean_absolute_error(y_val, y_pred)
+#     print("Validation Error for epoch: ", epoch, " is ", MAE)
+#     erros.append(MAE)
+
+# best_epoch = epochs_trial[np.where(erros == min(erros))[0][0]]
+# print("Best epoch is: ", best_epoch)
