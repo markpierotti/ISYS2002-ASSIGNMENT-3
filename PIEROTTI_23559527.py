@@ -40,11 +40,8 @@ data.drop(columns=[
 
 # Drop_duplicate rows / values if found
 data.drop_duplicates(inplace=True)
-print(data)
-
-
-
 print(data) # Number of duplicate rows: 0
+
 
 # Rename 'dt' column to 'Date' and added spaces to other column headers with data.rename from pandas - logic was wrong, relocated data.rename
 # to where it is now, before index is set
@@ -145,63 +142,46 @@ print("Training MSE: ", mean_squared_error(y_train, y_pred_train))
 print("Validation MSE: ", mean_squared_error(y_val, y_pred_val))
 print("Testing MSE: ", mean_squared_error(y_test, y_pred_test))
 
-# Epoch 1/5
-# 64/64 [==============================] - 0s 434us/step - loss: 0.1412 - mae: 0.3057
-# Epoch 2/5
-# 64/64 [==============================] - 0s 386us/step - loss: 0.0137 - mae: 0.1011
-# Epoch 3/5
-# 64/64 [==============================] - 0s 438us/step - loss: 0.0049 - mae: 0.0595
-# Epoch 4/5
-# 64/64 [==============================] - 0s 389us/step - loss: 4.9683e-04 - mae: 0.0173
-# Epoch 5/5
-# 64/64 [==============================] - 0s 341us/step - loss: 4.0034e-05 - mae: 0.0050
-# 13/13 [==============================] - 0s 344us/step
-# Testing MSE:  3.8776119495861166e-05
-# 40/40 [==============================] - 0s 286us/step
-# 10/10 [==============================] - 0s 335us/step
-# 13/13 [==============================] - 0s 320us/step
-# Training MSE:  3.571801319483391e-05
-# Validation MSE:  3.0016487629562033e-05
-# Testing MSE:  3.8776119495861166e-05
 
-# # Epoch trials to establish best model with least error for training to then test the data with.
-# epochs_trial = [3, 5, 7, 10, 11, 12, 13, 14, 15, 16, 17, 18]
-# erros = []
-# for epoch in epochs_trial:
-#     model = Sequential()
-#     model.add(InputLayer(input_shape=(4)))
-#     model.add(Dense(units=10, activation='relu'))
-#     model.add(Dense(units=10, activation='relu'))
-#     model.add(Dense(1, activation='linear'))
-    
-#     model.compile(loss='mean_squared_error', optimizer='adam', metrics=['mean_absolute_error'])
-#     model.fit(X_train, y_train ,batch_size = 20, epochs = 5, verbose=1)
-    
-#     y_pred = model.predict(X_val)
-#     MAE = mean_absolute_error(y_val, y_pred)
-#     print("Validation Error for epoch: ", epoch, " is ", MAE)
-#     erros.append(MAE)
 
-# best_epoch = epochs_trial[np.where(erros == min(erros))[0][0]]
-# print("Best epoch is: ", best_epoch)
-
-# # Experiment to see what happens if it runs 100 epochs(!) ive optimised the M1 Apple Silicon chip to leverage the GPU and Neural Network Architecture, this should be interesting.
-# epochs_trial = list(range(1, 101))
-# erros = []
-# for epoch in epochs_trial:
-#     model = Sequential()
-#     model.add(InputLayer(input_shape=(4)))
-#     model.add(Dense(units=33, activation='relu'))
-#     model.add(Dense(units=2, activation='relu'))
-#     model.add(Dense(1, activation='linear'))
+# Epoch trials to establish best model with least error for training to then test the data with.
+epochs_trial = [3, 5, 7, 10, 11, 12, 13, 14, 15, 16, 17, 18]
+erros = []
+for epoch in epochs_trial:
+    model = Sequential()
+    model.add(InputLayer(input_shape=(4)))
+    model.add(Dense(units=10, activation='relu'))
+    model.add(Dense(units=10, activation='relu'))
+    model.add(Dense(1, activation='linear'))
     
-#     model.compile(loss='mean_squared_error', optimizer='adam', metrics=['mean_absolute_error'])
-#     model.fit(X_train, y_train ,batch_size = 20, epochs = 5, verbose=1)
+    model.compile(loss='mean_squared_error', optimizer='adam', metrics=['mean_absolute_error'])
+    model.fit(X_train, y_train ,batch_size = 20, epochs = 5, verbose=1)
     
-#     y_pred = model.predict(X_val)
-#     MAE = mean_absolute_error(y_val, y_pred)
-#     print("Validation Error for epoch: ", epoch, " is ", MAE)
-#     erros.append(MAE)
+    y_pred = model.predict(X_val)
+    MAE = mean_absolute_error(y_val, y_pred)
+    print("Validation Error for epoch: ", epoch, " is ", MAE)
+    erros.append(MAE)
 
-# best_epoch = epochs_trial[np.where(erros == min(erros))[0][0]]
-# print("Best epoch is: ", best_epoch)
+best_epoch = epochs_trial[np.where(erros == min(erros))[0][0]]
+print("Best epoch is: ", best_epoch)
+
+# Experiment to see what happens if it runs 100 epochs(!) ive optimised the M1 Apple Silicon chip to leverage the GPU and Neural Network Architecture, this should be interesting.
+epochs_trial = list(range(1, 101))
+erros = []
+for epoch in epochs_trial:
+    model = Sequential()
+    model.add(InputLayer(input_shape=(4)))
+    model.add(Dense(units=33, activation='relu'))
+    model.add(Dense(units=2, activation='relu'))
+    model.add(Dense(1, activation='linear'))
+    
+    model.compile(loss='mean_squared_error', optimizer='adam', metrics=['mean_absolute_error'])
+    model.fit(X_train, y_train ,batch_size = 20, epochs = 5, verbose=1)
+    
+    y_pred = model.predict(X_val)
+    MAE = mean_absolute_error(y_val, y_pred)
+    print("Validation Error for epoch: ", epoch, " is ", MAE)
+    erros.append(MAE)
+
+best_epoch = epochs_trial[np.where(erros == min(erros))[0][0]]
+print("Best epoch is: ", best_epoch)
