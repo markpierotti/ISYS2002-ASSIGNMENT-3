@@ -18,8 +18,7 @@ from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 import seaborn as sns
 from keras.models import Sequential
-from keras.layers import Dense
-from keras.layers import InputLayer
+from keras.layers import Dense, InputLayer
 from sklearn.metrics import mean_squared_error, mean_absolute_error
 
 # import dataset. changed file location from assessment 2 to asesssment 3 folder. pd.read_csv() function makes csv a dataframe
@@ -31,15 +30,21 @@ data = pd.read_csv('/Users/pierotti/SCU/ISYS2002_Data Wrangling and Advanced Ana
 # the range was being screwy as well, played around with the upper limit until it started at correct date.
 # also went back to early modules to ensure consistant code formatting/syntax. Apply data.drop to Uncertainty columns
 data.drop(index = data.index[0:1200], inplace=True)
-data.drop(columns=['LandAverageTemperatureUncertainty', 'LandMaxTemperatureUncertainty', 'LandMinTemperatureUncertainty', 'LandAndOceanAverageTemperatureUncertainty'], inplace = True)
-print(data)
 
+# drop() function to remove unnecessary columns
+data.drop(columns=[
+    'LandAverageTemperatureUncertainty',
+    'LandMaxTemperatureUncertainty',
+    'LandMinTemperatureUncertainty',
+    'LandAndOceanAverageTemperatureUncertainty'], inplace = True)
 
-# Check for duplicates in dataset
-# no duplicates found, so code commented out
+# Drop_duplicate rows / values if found
 data.drop_duplicates(inplace=True)
 print(data)
-# Number of duplicate rows: 0
+
+
+
+print(data) # Number of duplicate rows: 0
 
 # Rename 'dt' column to 'Date' and added spaces to other column headers with data.rename from pandas - logic was wrong, relocated data.rename
 # to where it is now, before index is set
@@ -60,21 +65,14 @@ print(data)
 # Apply to_datetime to convert date to a string - pd.to_datetime(data['Date']) included hours, 
 # .dt.date attribute added to remove hours, leaving only yyyy-mm-dd
 
+# Connvert column to datetime
 data['Date'] = pd.to_datetime(data['Date']).dt.date
+
+# Apply indexing to column A - 'Date'.
+data.set_index('Date', inplace=True)
 
 # Print to see if it works. It does work, print code commented out.
 print(data)
-#
-
-# Apply indexing to column A - 'Date'. pandas library already loaded. note: changed 'dt' to 'Date' to
-# reflect the change of data.rename relocation in sequence
-
-data.set_index('Date', inplace=True)
-
-# Print to see if it works. It does work, print code commented out. *when code is commented out, index
-# added to dataframe as individual column, code modifies Date column to be Row Label of Dataframe
-print(data)
-
 
 # Normalize temperature columns [0,1] using MinMaxScaler - excluding normalisation of related uncertainity columns
 # as they will not be used as output variables
