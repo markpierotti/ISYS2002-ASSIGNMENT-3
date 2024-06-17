@@ -16,6 +16,7 @@ import numpy as np
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
 import seaborn as sns
 from keras.models import Sequential
 from keras.layers import Dense, InputLayer
@@ -23,6 +24,20 @@ from sklearn.metrics import mean_squared_error, mean_absolute_error
 
 # import dataset. changed file location from assessment 2 to asesssment 3 folder. pd.read_csv() function makes csv a dataframe
 data = pd.read_csv('/Users/pierotti/SCU/ISYS2002_Data Wrangling and Advanced Analytics/Assignment 3/GlobalTemperatures.csv')
+
+# visualise raw data as a Line plot for Land Average Temperature over time, same as Assignment 1 and 2
+plt.figure(figsize=(14, 8))
+plt.plot(data['dt'], data['LandAverageTemperature'], label='Land Average Temperature')
+plt.xlabel('Date')
+plt.ylabel('Temperature (°C)')
+plt.title('Raw Land Average Temperature Over Time')
+plt.xticks(rotation=45)
+plt.tight_layout()
+plt.xticks(pd.date_range(start=data.index.min(), end=data.index.max(), freq='25Y'), rotation=45)
+plt.legend()
+plt.show()
+
+
 
 # Drop() function to exclude rows 1 as they are headers, include row 1202. 
 # *note - data.drop(index = range(2, 1203), inplace=True) by itself threw an error: not found in axis.
@@ -48,13 +63,13 @@ print(data) # Number of duplicate rows: 0
 
 data.rename(columns = {'dt': 'Date'}, inplace = True)
 data.rename(columns = {'LandAverageTemperature': 'Land Average Temperature'}, inplace = True)
-data.rename(columns = {'LandAverageTemperatureUncertainty': 'Land  Average Temperature Uncertainty'}, inplace = True)
-data.rename(columns = {'LandMaxTemperature': 'Land Max Temperature'}, inplace = True)
-data.rename(columns = {'LandMaxTemperatureUncertainity': 'Land Max Temperature Uncertainity'}, inplace = True)
-data.rename(columns = {'LandMinTemperature': 'Land Min Temperature'}, inplace = True)
-data.rename(columns = {'LandMinTemperatureUncertainity': 'Land Min Temperature Uncertainity'}, inplace = True)
-data.rename(columns = {'LandAndOceanAverageTemperature': 'Land And Ocean Average Temperature'}, inplace = True)
-data.rename(columns = {'LandAndOceanAverageTemperatureUncertainity': 'Land And Ocean Average Temperature Uncertainity'}, inplace = True)
+# data.rename(columns = {'LandAverageTemperatureUncertainty': 'Land  Average Temperature Uncertainty'}, inplace = True)
+# data.rename(columns = {'LandMaxTemperature': 'Land Max Temperature'}, inplace = True)
+# data.rename(columns = {'LandMaxTemperatureUncertainity': 'Land Max Temperature Uncertainity'}, inplace = True)
+# data.rename(columns = {'LandMinTemperature': 'Land Min Temperature'}, inplace = True)
+# data.rename(columns = {'LandMinTemperatureUncertainity': 'Land Min Temperature Uncertainity'}, inplace = True)
+# data.rename(columns = {'LandAndOceanAverageTemperature': 'Land And Ocean Average Temperature'}, inplace = True)
+# data.rename(columns = {'LandAndOceanAverageTemperatureUncertainity': 'Land And Ocean Average Temperature Uncertainity'}, inplace = True)
 
 # Print to check if it works. It does work, print code commented out.
 print(data)
@@ -62,8 +77,8 @@ print(data)
 # Apply to_datetime to convert date to a string - pd.to_datetime(data['Date']) included hours, 
 # .dt.date attribute added to remove hours, leaving only yyyy-mm-dd
 
-# Connvert column to datetime
-data['Date'] = pd.to_datetime(data['Date']).dt.date
+# Connvert column to datetime - indocating the format is mixed
+data['Date'] = pd.to_datetime(data['Date'], format = 'mixed', dayfirst=True).dt.date
 
 # Apply indexing to column A - 'Date'.
 data.set_index('Date', inplace=True)
@@ -80,6 +95,16 @@ data[['Land Average Temperature', 'Land Max Temperature', 'Land Min Temperature'
 
 # print to see if it works. It does work, print code commented out.
 print(data)
+
+# Visualize the processed data
+plt.figure(figsize=(12, 6))
+plt.plot(data.index, data['Land Average Temperature'], label='Land Average Temperature', marker='o')
+#plt.plot(data.index, data['Land Max Temperature'], label='Land Max Temperature', marker='o')
+#plt.plot(data.index, data['Land Min Temperature'], label='Land Min Temperature', marker='o')
+#plt.plot(data.index, data['Land And Ocean Average Temperature'], label='Land And Ocean Average Temperature', marker='o')
+
+
+
 
 # Neural Network part
 
@@ -145,25 +170,25 @@ print("Testing MSE: ", mean_squared_error(y_test, y_pred_test))
 
 
 # Epoch trials to establish best model with least error for training to then test the data with.
-epochs_trial = [3, 5, 7, 10, 11, 12, 13, 14, 15, 16, 17, 18]
-erros = []
-for epoch in epochs_trial:
-    model = Sequential()
-    model.add(InputLayer(input_shape=(4)))
-    model.add(Dense(units=10, activation='relu'))
-    model.add(Dense(units=10, activation='relu'))
-    model.add(Dense(1, activation='linear'))
+# epochs_trial = [3, 5, 7, 10, 11, 12, 13, 14, 15, 16, 17, 18]
+# erros = []
+# for epoch in epochs_trial:
+#     model = Sequential()
+#     model.add(InputLayer(input_shape=(4)))
+#     model.add(Dense(units=10, activation='relu'))
+#     model.add(Dense(units=10, activation='relu'))
+#     model.add(Dense(1, activation='linear'))
     
-    model.compile(loss='mean_squared_error', optimizer='adam', metrics=['mean_absolute_error'])
-    model.fit(X_train, y_train ,batch_size = 20, epochs = 5, verbose=1)
+#     model.compile(loss='mean_squared_error', optimizer='adam', metrics=['mean_absolute_error'])
+#     model.fit(X_train, y_train ,batch_size = 20, epochs = 5, verbose=1)
     
-    y_pred = model.predict(X_val)
-    MAE = mean_absolute_error(y_val, y_pred)
-    print("Validation Error for epoch: ", epoch, " is ", MAE)
-    erros.append(MAE)
+#     y_pred = model.predict(X_val)
+#     MAE = mean_absolute_error(y_val, y_pred)
+#     print("Validation Error for epoch: ", epoch, " is ", MAE)
+#     erros.append(MAE)
 
-best_epoch = epochs_trial[np.where(erros == min(erros))[0][0]]
-print("Best epoch is: ", best_epoch)
+# best_epoch = epochs_trial[np.where(erros == min(erros))[0][0]]
+# print("Best epoch is: ", best_epoch)
 
 # Experiment to see what happens if it runs 100 epochs(!) ive optimised the M1 Apple Silicon chip to leverage the GPU and Neural Network Architecture, this should be interesting.
 epochs_trial = list(range(1, 101))
